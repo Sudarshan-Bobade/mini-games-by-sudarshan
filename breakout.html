@@ -1,0 +1,28 @@
+<canvas id="breakout" width="600" height="400"></canvas>
+<script>
+const canvas = document.getElementById("breakout");
+const ctx = canvas.getContext("2d");
+let paddle = {x:canvas.width/2 - 35, w:70, h:10}, ball = {x:300, y:200, r:7, dx:4, dy:-4};
+let bricks = [], rows = 3, cols = 5, bw = 100, bh = 20, pad = 10;
+for(let r=0; r<rows; r++) for(let c=0; c<cols; c++) bricks.push({x:c*(bw+pad)+30, y:r*(bh+pad)+30, status:1});
+document.addEventListener("mousemove", e => paddle.x = e.clientX - canvas.getBoundingClientRect().left - paddle.w/2);
+function drawBall(){ ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); }
+function drawPaddle(){ ctx.fillStyle = "white"; ctx.fillRect(paddle.x, canvas.height - paddle.h, paddle.w, paddle.h); }
+function drawBricks(){ bricks.forEach(b => { if(b.status){ ctx.fillStyle = "lime"; ctx.fillRect(b.x, b.y, bw, bh); } }); }
+function update(){
+  ball.x += ball.dx; ball.y += ball.dy;
+  if(ball.x + ball.r > canvas.width || ball.x - ball.r < 0) ball.dx = -ball.dx;
+  if(ball.y - ball.r < 0) ball.dy = -ball.dy;
+  if(ball.x > paddle.x && ball.x < paddle.x + paddle.w && ball.y + ball.r > canvas.height - paddle.h)
+    ball.dy = -ball.dy;
+  bricks.forEach(b => {
+    if(b.status && ball.x > b.x && ball.x < b.x+bw && ball.y > b.y && ball.y < b.y+bh){
+      ball.dy = -ball.dy; b.status = 0;
+    }
+  });
+  if(ball.y + ball.r > canvas.height) document.location.reload();
+}
+function draw(){ ctx.clearRect(0, 0, canvas.width, canvas.height); drawBall(); drawPaddle(); drawBricks(); }
+function game(){ update(); draw(); }
+setInterval(game, 1000/60);
+</script>

@@ -1,0 +1,30 @@
+<canvas id="pong" width="600" height="400"></canvas>
+<script>
+const canvas = document.getElementById("pong");
+const ctx = canvas.getContext("2d");
+let paddleWidth = 10, paddleHeight = 80;
+let playerY = canvas.height/2 - paddleHeight/2;
+let aiY = playerY, ball = {x:canvas.width/2, y:canvas.height/2, r:10, dx:4, dy:4};
+function drawRect(x, y, w, h, color){ ctx.fillStyle = color; ctx.fillRect(x, y, w, h); }
+function drawCircle(x, y, r, color){ ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.closePath(); ctx.fill(); }
+function resetBall(){ ball.x = canvas.width/2; ball.y = canvas.height/2; ball.dx = -ball.dx; }
+canvas.addEventListener("mousemove", e => playerY = e.clientY - canvas.getBoundingClientRect().top - paddleHeight/2);
+function collision(b, p){ return b.x < p.x + p.w && b.x + b.r > p.x && b.y < p.y + p.h && b.y + b.r > p.y; }
+function update(){
+  ball.x += ball.dx; ball.y += ball.dy;
+  let player = {x:0, y:playerY, w:paddleWidth, h:paddleHeight};
+  let ai = {x:canvas.width - paddleWidth, y:aiY, w:paddleWidth, h:paddleHeight};
+  aiY += ((ball.y - (aiY + paddleHeight/2))) * 0.09;
+  if(ball.y + ball.r > canvas.height || ball.y - ball.r < 0) ball.dy = -ball.dy;
+  if(collision(ball, player) || collision(ball, ai)) ball.dx = -ball.dx;
+  if(ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) resetBall();
+}
+function render(){
+  drawRect(0,0,canvas.width,canvas.height,"black");
+  drawRect(0, playerY, paddleWidth, paddleHeight, "white");
+  drawRect(canvas.width - paddleWidth, aiY, paddleWidth, paddleHeight, "white");
+  drawCircle(ball.x, ball.y, ball.r, "white");
+}
+function game(){ update(); render(); }
+setInterval(game, 1000/60);
+</script>

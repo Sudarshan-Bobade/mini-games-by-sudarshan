@@ -1,0 +1,19 @@
+<style>
+  table { border-collapse: collapse; margin: 20px auto; }
+  td { width: 100px; height: 100px; text-align: center; font-size: 3em; cursor: pointer; border: 2px solid #fff; }
+</style>
+<table>
+  <tr><td></td><td></td><td></td></tr>
+  <tr><td></td><td></td><td></td></tr>
+  <tr><td></td><td></td><td></td></tr>
+</table>
+<script>
+const cells = document.querySelectorAll("td");
+let turn = "X";
+cells.forEach(cell => cell.onclick = () => {
+  if(cell.textContent) return;
+  cell.textContent = turn;
+  cell.style.color = turn === "X" ? "blue" : "red";
+  turn = turn === "X" ? "O" : "X";
+});
+</script>
